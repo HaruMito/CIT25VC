@@ -1,0 +1,46 @@
+body{
+    background-color: #FFC0CB;
+}
+.wrap #sho h2 {
+}
+body header h1 {
+    color: #800000;
+    background-color: #FFFFFF;
+}
+#top{
+    width: 1300px;
+    height: 100px;
+    background-color: #FABD24;
+}
+#sho{
+    width: 300px;
+    height: 500px;
+    float: left;
+    clear: none;
+}
+#mon{
+    width: 300px;
+    height: 500px;
+    float: right;
+    clear: none;
+}
+#zaha{
+    width: 300px;
+    height: 500px;
+    float: left;
+    clear: none;
+}
+#suu{
+    width: 300px;
+    height: 500px;
+    float: right;
+    clear: none;
+}
+img{
+width:100%;
+}
+.wrap{
+	background-color:#F2EE73;
+	display:flex;
+	flex-wrap:w wrap;
+}
