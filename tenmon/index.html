@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天文4択クイズ</title>
+    <!-- Tailwind CSS CDNをロード -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* カスタムフォントと基本スタイルの設定 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* GitHub Dark Modeっぽい背景色 */
+        }
+        .container {
+            max-width: 768px; /* iPad Proくらいの幅 */
+        }
+        .question-card, .result-card {
+            background: #161b22; /* カード背景色 */
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+        }
+        .choice-button {
+            transition: all 0.2s;
+        }
+        .choice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            background-color: #232832;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- メインコンテナ -->
+    <div id="quiz-container" class="container w-full">
+
+        <!-- ヘッダーとスコア表示 -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-100">🌌 天文クイズ</h1>
+            <div id="score-display" class="text-xl font-semibold text-sky-400 p-2 rounded-lg bg-gray-800 shadow-lg">
+                スコア: 0 / 0
+            </div>
+        </div>
+
+        <!-- クイズカード -->
+        <div id="game-area" class="question-card rounded-xl p-6 md:p-8">
+
+            <!-- 初期画面 / 終了画面表示エリア -->
+            <div id="start-screen" class="text-center">
+                <h2 class="text-2xl font-bold mb-4 text-white">全10問！宇宙の知識を試そう！</h2>
+                <p class="text-gray-400 mb-6">スタートボタンを押してクイズを開始してください。</p>
+                <button id="start-button" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-full shadow-xl transition duration-150 transform hover:scale-105">
+                    🚀 クイズスタート
+                </button>
+            </div>
+
+            <!-- 問題表示エリア (ゲーム進行中に表示) -->
+            <div id="quiz-screen" class="hidden">
+                <div class="mb-6">
+                    <p id="question-number" class="text-sm font-medium text-sky-400 mb-2">問題 1 / 10</p>
+                    <div id="question-area" class="text-xl md:text-2xl font-semibold text-gray-100 p-4 bg-gray-700 rounded-lg">
+                        <!-- 問題文がここに入る -->
+                        問題文
+                    </div>
+                </div>
+
+                <!-- 4択表示エリア -->
+                <div id="choices-area" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 選択肢ボタンがここに入る -->
+                </div>
+
+                <!-- フィードバックエリア -->
+                <div id="feedback-area" class="mt-6 h-8 text-center text-xl font-bold">
+                    <!-- 正解/不正解のフィードバックがここに入る -->
+                </div>
+            </div>
+            
+            <!-- 結果表示エリア (ゲーム終了時に表示) -->
+            <div id="result-screen" class="hidden text-center">
+                <h2 id="result-title" class="text-3xl font-bold mb-4 text-yellow-300"></h2>
+                <p id="final-score-text" class="text-5xl font-extrabold text-green-500 mb-6"></p>
+                <p class="text-gray-400 mb-6">また挑戦して、宇宙博士を目指そう！</p>
+                <button id="restart-button" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-full shadow-xl transition duration-150 transform hover:scale-105">
+                    もう一度プレイ
+                </button>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Astronomically themed quiz data
+        const quizData = [
+            {
+                question: "太陽系の惑星の中で最も体積が大きいものはどれですか？",
+                choices: ["火星", "土星", "木星", "天王星"],
+                answer: "木星"
+            },
+            {
+                question: "地球から最も近い（太陽を除く）恒星は何ですか？",
+                choices: ["ベテルギウス", "プロキシマ・ケンタウリ", "シリウス", "ケンタウルス座α星"],
+                answer: "プロキシマ・ケンタウリ"
+            },
+            {
+                question: "光が1年間に進む距離を示す、天文学で使われる単位は何ですか？",
+                choices: ["天文単位 (AU)", "パーセク", "光速", "光年"],
+                answer: "光年"
+            },
+            {
+                question: "かつて惑星とされていたが、2006年に準惑星に分類された天体は何ですか？",
+                choices: ["ケレス", "エリス", "冥王星", "マケマケ"],
+                answer: "冥王星"
+            },
+            {
+                question: "赤く見えるため「赤い惑星」とも呼ばれる太陽系の惑星はどれですか？",
+                choices: ["金星", "火星", "水星", "木星"],
+                answer: "火星"
+            },
+            {
+                question: "天の川銀河の中心にあると考えられているものは何ですか？",
+                choices: ["球状星団", "超大質量ブラックホール", "巨大な暗黒物質の塊", "銀河ハロー"],
+                answer: "超大質量ブラックホール"
+            },
+            {
+                question: "太陽系で最も美しい輪を持つとされる惑星はどれですか？",
+                choices: ["木星", "天王星", "海王星", "土星"],
+                answer: "土星"
+            },
+            {
+                question: "太陽系外の恒星を周回する惑星のことを何と呼びますか？",
+                choices: ["彗星", "系外惑星", "準惑星", "小惑星"],
+                answer: "系外惑星"
+            },
+            {
+                question: "恒星がその一生の最後に迎えるかもしれない、大規模な爆発現象は何ですか？",
+                choices: ["ノヴァ", "フレア", "超新星爆発", "ガンマ線バースト"],
+                answer: "超新星爆発"
+            },
+            {
+                question: "彗星の主な成分として正しいものはどれですか？",
+                choices: ["岩石と金属", "ガスと塵", "氷と塵", "二酸化炭素"],
+                answer: "氷と塵"
+            }
+        ];
+
+        // Global state variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizActive = false;
+        
+        // DOM elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        const scoreDisplay = document.getElementById('score-display');
+        const questionNumber = document.getElementById('question-number');
+        const questionArea = document.getElementById('question-area');
+        const choicesArea = document.getElementById('choices-area');
+        const feedbackArea = document.getElementById('feedback-area');
+        const resultTitle = document.getElementById('result-title');
+        const finalScoreText = document.getElementById('final-score-text');
+
+        // Function to initialize or restart the game
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizActive = true;
+
+            // Display control
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            feedbackArea.textContent = ''; // Clear previous feedback
+
+            updateScoreDisplay();
+            displayQuestion();
+        }
+
+        // Function to update the score display
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `スコア: ${score} / ${currentQuestionIndex}`;
+        }
+
+        // Function to display the current question
+        function displayQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                endGame();
+                return;
+            }
+
+            const currentQuiz = quizData[currentQuestionIndex];
+            
+            // Update question number and text
+            questionNumber.textContent = `問題 ${currentQuestionIndex + 1} / ${quizData.length}`;
+            questionArea.textContent = currentQuiz.question;
+            
+            // Clear previous choices
+            choicesArea.innerHTML = '';
+
+            // Create choice buttons
+            currentQuiz.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.textContent = choice;
+                button.classList.add(
+                    'choice-button', 'p-4', 'bg-gray-800', 'text-gray-100', 'font-semibold',
+                    'rounded-lg', 'text-left', 'shadow-md', 'hover:bg-sky-700', 'transition', 'duration-200'
+                );
+                
+                // Add event listener to check the answer
+                button.addEventListener('click', () => checkAnswer(choice, button));
+                choicesArea.appendChild(button);
+            });
+            
+            // Re-enable quiz interaction
+            quizActive = true;
+            feedbackArea.textContent = '';
+        }
+
+        // Function to check the user's answer
+        function checkAnswer(selectedChoice, selectedButton) {
+            if (!quizActive) return;
+
+            quizActive = false; // Disable further clicks until next question
+
+            const currentQuiz = quizData[currentQuestionIndex];
+            const isCorrect = selectedChoice === currentQuiz.answer;
+
+            // Apply visual feedback to all buttons and the selected one
+            Array.from(choicesArea.children).forEach(button => {
+                button.disabled = true; // Disable all buttons
+                button.classList.remove('hover:bg-sky-700'); // Remove hover effect
+
+                if (button.textContent === currentQuiz.answer) {
+                    // Highlight the correct answer
+                    button.classList.add('bg-green-600', 'ring-4', 'ring-green-400');
+                    button.classList.remove('bg-gray-800');
+                } else if (button === selectedButton && !isCorrect) {
+                    // Highlight the incorrect selected answer
+                    button.classList.add('bg-red-600', 'ring-4', 'ring-red-400');
+                    button.classList.remove('bg-gray-800');
+                }
+            });
+
+            // Update score and feedback
+            if (isCorrect) {
+                score++;
+                feedbackArea.textContent = '✅ 正解です！';
+                feedbackArea.classList.remove('text-red-500');
+                feedbackArea.classList.add('text-green-500');
+            } else {
+                feedbackArea.textContent = '❌ 不正解...';
+                feedbackArea.classList.remove('text-green-500');
+                feedbackArea.classList.add('text-red-500');
+            }
+            
+            // Update score display immediately after checking
+            updateScoreDisplay();
+
+            // Wait a moment before moving to the next question
+            setTimeout(nextQuestion, 2000);
+        }
+
+        // Function to proceed to the next question or end the game
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                displayQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // Function to show the final result
+        function endGame() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const total = quizData.length;
+            
+            let titleText = "";
+            if (score === total) {
+                titleText = "🎉 満点おめでとう！宇宙博士！";
+            } else if (score >= total * 0.7) {
+                titleText = "✨ 素晴らしい！かなりの知識です！";
+            } else {
+                titleText = "👍 よく頑張りました！もう一度挑戦！";
+            }
+            
+            resultTitle.textContent = titleText;
+            finalScoreText.textContent = `${score} / ${total}`;
+            scoreDisplay.textContent = `最終スコア: ${score} / ${total}`;
+        }
+
+        // Event listeners
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+
+        // Initial score display setup
+        updateScoreDisplay();
+        
+    </script>
+</body>
+</html>
+
