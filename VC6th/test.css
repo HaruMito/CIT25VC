@@ -1,0 +1,243 @@
+/* style.css - サイト共通スタイルシート */
+
+/* 基本リセットとフォント設定 */
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    display: grid; /* ページ全体のレイアウトをグリッドに */
+    grid-template-rows: auto auto 1fr auto; /* ヘッダー, ナビ, メイン(可変), フッター */
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    color: #4a2d1f; /* アクセントカラー（ブラウン系） */
+}
+
+a {
+    color: #b54a00;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- ページ共通レイアウト --- */
+
+/* ヘッダー */
+header {
+    grid-row: 1;
+    background-color: #fff;
+    border-bottom: 2px solid #eee;
+    padding: 10px 5%;
+    display: flex;
+    justify-content: space-between; /* ロゴと店名を両端に */
+    align-items: center;
+}
+
+/* ▼ 条件：タイトルやロゴは画像化されている */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-placeholder {
+    /* ここにロゴ画像が入ります */
+    width: 180px;
+    height: 60px;
+    background-color: #eee;
+    border: 2px dashed #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    font-size: 14px;
+}
+/* ロゴ画像のサイズを固定する場合
+.logo-placeholder img {
+    width: 180px;
+    height: 60px;
+    object-fit: contain;
+}
+*/
+
+header h1 {
+    font-size: 1.5rem;
+    color: #4a2d1f;
+    margin: 0 0 0 20px;
+}
+
+/* ナビゲーション */
+nav {
+    grid-row: 2;
+    background-color: #4a2d1f; /* メインカラー */
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li a {
+    display: block;
+    padding: 15px 30px;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    background-color: #b54a00; /* ホバー時の色 */
+}
+
+
+/* メインコンテンツ */
+main {
+    grid-row: 3;
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto; /* 上下に余白、左右中央寄せ */
+}
+
+/* フッター */
+footer {
+    grid-row: 4;
+    background-color: #333;
+    color: #fff;
+    padding: 30px 5%;
+    text-align: center;
+}
+
+.footer-info {
+    font-size: 0.9rem;
+}
+
+/* --- コンテンツ用スタイル --- */
+
+.page-title {
+    border-bottom: 3px solid #b54a00;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.content-section {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+/* ▼ 条件：Divタグにより、各ページがグリッドデザインになっている */
+.grid-container {
+    display: grid;
+    /* 画面幅に応じて、300px以上のカラムを自動で配置 */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px; /* グリッド間の隙間 */
+}
+
+.grid-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden; /* 画像の角を丸くするため */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+
+.grid-item:hover {
+    transform: translateY(-5px);
+}
+
+.grid-item h3 {
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    margin: 0;
+    background-color: #fdfaf8;
+    border-bottom: 1px solid #eee;
+}
+
+.grid-item p,
+.grid-item ul {
+    padding: 0 20px 20px 20px;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.grid-item ul {
+    padding-left: 40px; /* リストのインデント */
+}
+
+/* ▼ 条件：使用されている画像は、トリミングや色調変換など見やすい処理 */
+.content-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* 画像をトリミング（短辺に合わせて拡大縮小し、はみ出た部分をカット）*/
+    filter: saturate(1.1) contrast(1.05); /* 彩度とコントラストを少し上げる（色調変換） */
+    border-bottom: 1px solid #eee;
+}
+
+/* ホームのヒーローセクション */
+.hero {
+    text-align: center;
+    padding: 40px;
+    background: #fff url('https://picsum.photos/id/1060/1200/400') center center/cover no-repeat; /* サンプル画像 */
+    color: #fff;
+    border-radius: 8px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+}
+
+.hero h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-top: 0;
+}
+
+/* アクセスページ用 */
+.access-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 300px;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    border-radius: 8px;
+}
+
+/* レスポンシブ対応 (スマホ用) */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 20px;
+    }
+    header h1 {
+        margin: 10px 0 0 0;
+    }
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* グリッドを1カラムに */
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .access-grid {
+        grid-template-columns: 1fr;
+    }
+}
